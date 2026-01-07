@@ -1,28 +1,23 @@
-import numpy as np
 from PIL import Image
+import numpy as np
+from scipy.signal import convolve2d
 
 
 def load_image(path):
-    img = Image.open(path).convert("L")
-    return np.array(img)
+    image = Image.open(path)
+    image_array = np.array(image)
+    return image_array
 
 
-def edge_detection(img):
-    # Ensure float computations
-    img = img.astype(np.float32)
-
-    # Pad to handle borders
-    p = np.pad(img, 1, mode="edge")
-
-    # Sobel gradients (3x3) implemented with pure numpy shifts
-    gx = (p[:-2, 2:] + 2 * p[1:-1, 2:] + p[2:, 2:]) - (p[:-2, :-2] + 2 * p[1:-1, :-2] + p[2:, :-2])
-    gy = (p[2:, :-2] + 2 * p[2:, 1:-1] + p[2:, 2:]) - (p[:-2, :-2] + 2 * p[:-2, 1:-1] + p[:-2, 2:])
-
-    mag = np.hypot(gx, gy)
-
-    # Normalize to 0..255
-    mmax = mag.max()
-    if mmax > 0:
-        mag = (mag / mmax) * 255.0
-
-    return mag.astype(np.uint8)
+def edge_detection(image):
+    gray_image = np.mean(image, axis=2)
+    kernelx = np.array([[-1, 0, 1],
+                        [-2, 0, 2],
+                        [-1, 0, 1]])
+    kernely = np.array([[-1, -2, -1],
+                        [0, 0, 0],
+                        [1, 2, 1]])
+    edgex = convolve2d(gray_image, kernelx, mode="same")
+    edgey = convolve2d(gray_image, kernely, mode="same")
+    edgeMAG = np.sqrt(edgex*2 + edgey*2)
+    return edgeMAG
