@@ -2,17 +2,22 @@ from PIL import Image
 import numpy as np
 
 def load_image(path):
-    img = Image.open(path).convert("L")
-    arr = np.asarray(img, dtype=np.uint8)
+    img = Image.open(path)
 
-    if "edges" in path:
+    # edges: להחזיר מסכה בוליאנית דו־ממדית
+    if path.endswith("lena_edges.png") or "edges" in path:
+        arr = np.asarray(img.convert("L"), dtype=np.uint8)
         return arr > 0
 
-    return arr
-    
+    # lena.jpg: להחזיר RGB תלת־ממדי
+    return np.asarray(img.convert("RGB"), dtype=np.uint8)
+
 
 def edge_detection(image):
-   def edge_detection(image):
+    # אם נכנס RGB -> להפוך לאפור
+    if image.ndim == 3:
+        image = image.mean(axis=2)
+
     img = image.astype(np.int16)
 
     dx = np.abs(img[:, 1:] - img[:, :-1])
@@ -23,6 +28,4 @@ def edge_detection(image):
 
     edges = dx + dy
     edges = np.clip(edges, 0, 255).astype(np.uint8)
-
     return edges
-  
