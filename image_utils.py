@@ -1,11 +1,12 @@
 from PIL import Image
 import numpy as np
+from skimage.filters.rank import median
+from skimage.morphology import ball
 
 def load_image(path):
     img = Image.open(path).convert("L")
     arr = np.asarray(img)
 
-    # אם זו תמונת קצוות – להחזיר בוליאני
     if "edges" in path:
         return arr > 0
 
