@@ -26,4 +26,4 @@ def edge_detection(image):
     m = edges.max()
     if m > 0:
         edges = edges / m 
-    return (edges * 255).astype(np.uint8)
+    return np.clip(np.rint(edges * 255) ,0 ,255).astype(np.uint8)
