@@ -14,7 +14,6 @@ def load_image(path):
 
 
 def edge_detection(image):
-    def edge_detection(image):
     # image יכול להגיע RGB אחרי median(..., ball(3))
     if image.ndim == 3:
         gray = image.mean(axis=2).astype(np.float32)
