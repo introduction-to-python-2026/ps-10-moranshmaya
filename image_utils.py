@@ -17,23 +17,17 @@ def load_image(path: str):
 
 
 def edge_detection(image):
-    # to float32
     img = image.astype(np.float32)
 
-    # normalize to 0..1 (works for uint8 and for float 0..255)
+    # normalize to 0..1
     if img.max() > 1.0:
         img = img / 255.0
 
-    # grayscale in 0..1
+    # grayscale
     gray = rgb2gray(img) if img.ndim == 3 else img
 
-    # sobel response
+    # sobel (already normalized!)
     edges = sobel(gray)
 
-    # normalize to 0..1
-    m = edges.max()
-    if m > 0:
-        edges = edges / m
-
-    # to uint8 0..255 (עם עיגול, זה חשוב לסף 50)
+    # to uint8 0..255 (NO extra normalization)
     return np.rint(edges * 255).astype(np.uint8)
