@@ -3,27 +3,19 @@ import numpy as np
 
 def load_image(path):
     img = Image.open(path).convert("L")
-    arr = np.asarray(img, dtype=np.float32)
-    return arr
+    return np.asarray(img, dtype=np.uint8)
 
 def edge_detection(image):
-    # Simple edge detection using differences (no scipy)
+    def edge_detection(image):
+    img = image.astype(np.int16)
 
-    # Horizontal edges
-    dx = np.abs(image[:, 1:] - image[:, :-1])
+    dx = np.abs(img[:, 1:] - img[:, :-1])
+    dy = np.abs(img[1:, :] - img[:-1, :])
 
-    # Vertical edges
-    dy = np.abs(image[1:, :] - image[:-1, :])
-
-    # Pad to original size
     dx = np.pad(dx, ((0, 0), (0, 1)))
     dy = np.pad(dy, ((0, 1), (0, 0)))
 
     edges = dx + dy
-
-    # Normalize to [0, 1]
-    max_val = edges.max()
-    if max_val > 0:
-        edges = edges / max_val
+    edges = np.clip(edges, 0, 255).astype(np.uint8)
 
     return edges
