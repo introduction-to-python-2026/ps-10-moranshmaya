@@ -1,24 +1,18 @@
 from PIL import Image
 import numpy as np
-from skimage.filters import sobel
-
 
 def load_image(path):
-    img = Image.open(path)
+    img = Image.open(path).convert("L")
+    arr = np.asarray(img, dtype=np.uint8)
 
-    # לתמונת קצוות – להחזיר בוליאני
     if "edges" in path:
-        return np.asarray(img.convert("L")) > 0
+        return arr > 0
 
-    # לתמונה רגילה – להחזיר RGB (3 ממדים)
-    return np.asarray(img.convert("RGB"), dtype=np.uint8)
-
+    return arr
+    
 
 def edge_detection(image):
-    # להפוך RGB לאפור
-    if image.ndim == 3:
-        image = image.mean(axis=2)
-
+   def edge_detection(image):
     img = image.astype(np.int16)
 
     dx = np.abs(img[:, 1:] - img[:, :-1])
@@ -31,3 +25,4 @@ def edge_detection(image):
     edges = np.clip(edges, 0, 255).astype(np.uint8)
 
     return edges
+  
