@@ -1,7 +1,6 @@
 from PIL import Image
 import numpy as np
-from skimage.color import rgb2gray
-from skimage.filters import sobel
+from scipy.signal import convolve2d
 def load_image(path: str):
     img = Image.open(path)
     if "edges" in path:
@@ -12,6 +11,20 @@ def edge_detection(image):
     img = image.astype(np.float32)
     if img.max() > 1.0:
         img = img / 255.0
-    gray = rgb2gray(img) if img.ndim == 3 else img
-    edges = sobel(gray)
-    return np.clip(edges * 255.0, 0, 255).astype(np.uint8)
+    if img.ndim == 3:
+        gray = img.mean(axis=2)
+    else:
+        gray = img
+    kernelY = np.array([[ 1,  2,  1],
+                        [ 0,  0,  0],
+                        [-1, -2, -1]], dtype=np.float32)
+    kernelX = np.array([[ 1,  0, -1],
+                        [ 2,  0, -2],
+                        [ 1,  0, -1]], dtype=np.float32)
+    edgeY = convolve2d(gray, kernelY, mode="same", boundary="fill", fillvalue=0)
+    edgeX = convolve2d(gray, kernelX, mode="same", boundary="fill", fillvalue=0)
+    edgeMAG = np.sqrt(edgeX*2 + edgeY*2)
+    m = edgeMAG.max()
+    if m > 0:
+        edgeMAG = edgeMAG / m
+    return (edgeMAG * 255).astype(np.uint8)
