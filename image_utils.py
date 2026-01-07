@@ -29,6 +29,7 @@ def edge_detection(image):
         gray = img
 
     edges = sobel(gray)
+    edges = np.sqrt(edges)
 
     m = edges.max()
     if m > 0:
