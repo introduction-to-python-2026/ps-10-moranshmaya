@@ -23,7 +23,10 @@ def edge_detection(image):
         gray = image.astype(np.float32) / 255.0
 
     edges = sobel(gray)
+
     m = edges.max()
     if m > 0:
-        edges = edges / m 
-    return np.clip(np.rint(edges * 255) ,0 ,255).astype(np.uint8)
+        edges = edges / m
+
+    return np.clip(np.rint(edges * 255), 0, 255).astype(np.uint8)
+    
