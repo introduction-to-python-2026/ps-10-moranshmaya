@@ -7,32 +7,28 @@ from skimage.filters import sobel
 def load_image(path: str):
     img = Image.open(path)
 
-    # ground-truth edge mask (2D boolean)
+    # ground-truth edge mask
     if "edges" in path:
         arr = np.asarray(img.convert("L"), dtype=np.uint8)
         return arr > 0
 
-    # regular image (RGB uint8, 3D)
+    # regular image
     return np.asarray(img.convert("RGB"), dtype=np.uint8)
 
 
 def edge_detection(image):
-    def edge_detection(image):
-    img = image.astype(np.float32)
+    # convert to grayscale float in [0,1]
+    if image.ndim == 3:
+        gray = rgb2gray(image.astype(np.float32) / 255.0)
+    else:
+        gray = image.astype(np.float32) / 255.0
 
-    # נרמול רק אם הקלט הוא uint8
-    if img.max() > 1.0:
-        img = img / 255.0
-
-    gray = rgb2gray(img) if img.ndim == 3 else img
-
+    # sobel edge detection
     edges = sobel(gray)
 
-    m = edges.max()
-    if m > 0:
-        edges = edges / m
+    # normalize
+    if edges.max() > 0:
+        edges = edges / edges.max()
 
-    # הגברה לינארית עדינה כדי לעבור את הסף 50
-    edges = np.clip(edges * 1.2, 0.0, 1.0)
-
+    # convert to uint8
     return (edges * 255).astype(np.uint8)
