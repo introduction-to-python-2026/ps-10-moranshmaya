@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from skimage import filters
+from skimage.filters import sobel
 
 
 def load_image(path):
@@ -9,5 +9,5 @@ def load_image(path):
 
 
 def edge_detection(img):
-    edges = filters.sobel(img)
+    edges = sobel(img)
     return (edges * 255).astype(np.uint8)
