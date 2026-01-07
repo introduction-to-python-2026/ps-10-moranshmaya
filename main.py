@@ -5,9 +5,7 @@ from image_utils import load_image, edge_detection
 
 
 def save_image(arr, out_path):
-    # arr expected in [0,1]. Convert to uint8 [0,255] and save.
-    arr = np.clip(arr, 0.0, 1.0)
-    img = Image.fromarray((arr * 255).astype(np.uint8))
+    img = Image.fromarray(arr.astype(np.uint8))
     img.save(out_path)
 
 
@@ -20,4 +18,3 @@ def main():
 
 if _name_ == "_main_":
     main()
-
