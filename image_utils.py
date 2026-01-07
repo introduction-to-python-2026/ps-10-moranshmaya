@@ -17,12 +17,13 @@ def load_image(path: str):
 
 
 def edge_detection(image):
-    # RGB -> gray in skimage convention (float 0..1)
     if image.ndim == 3:
-        gray = rgb2gray(image)
+        gray = rgb2gray(image.astype(np.float32) / 255.0)
     else:
         gray = image.astype(np.float32) / 255.0
 
     edges = sobel(gray)
-    edges = (edges * 255).astype(np.uint8)
-    return edges
+    m = edges.max()
+    if m > 0:
+        edges = edges / m 
+    return (edges * 255).astype(np.uint8)
