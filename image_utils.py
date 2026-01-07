@@ -10,4 +10,27 @@ def load_image(path):
     return arr
 
 def edge_detection(image):
-    pass # Replace the `pass` with your code
+    def edge_detection(image):
+    # 1) Smooth to reduce noise
+    blurred = convolve2d(image, np.ones((3, 3), dtype=np.float32) / 9.0, mode="same", boundary="symm")
+
+    # 2) Sobel filters (detect intensity changes)
+    sobel_x = np.array([[-1, 0, 1],
+                        [-2, 0, 2],
+                        [-1, 0, 1]], dtype=np.float32)
+
+    sobel_y = np.array([[-1, -2, -1],
+                        [ 0,  0,  0],
+                        [ 1,  2,  1]], dtype=np.float32)
+
+    gx = convolve2d(blurred, sobel_x, mode="same", boundary="symm")
+    gy = convolve2d(blurred, sobel_y, mode="same", boundary="symm")
+    # 3) Edge magnitude
+    edges = np.sqrt(gx*2 + gy*2)
+
+    # Optional: normalize to [0, 1] for nice output / stability
+    max_val = edges.max() if edges.size else 0.0
+    if max_val > 0:
+        edges = edges / max_val
+
+    return edges
