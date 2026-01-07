@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 from skimage.filters import sobel
+import cv2
 
 def load_image(path):
     img = Image.open(path)
@@ -14,15 +15,12 @@ def load_image(path):
 
 
 def edge_detection(image):
-    # image יכול להגיע RGB אחרי median(..., ball(3))
+    # להפוך ל-Gray uint8
     if image.ndim == 3:
-        gray = image.mean(axis=2).astype(np.float32)
+        gray = image.mean(axis=2).astype(np.uint8)
     else:
-        gray = image.astype(np.float32)
+        gray = image.astype(np.uint8)
 
-    # sobel עובד טוב על float
-    edges = sobel(gray)
-
-    # להחזיר 0..255 כדי שסף > 50 יעבוד
-    edges = np.clip(edges * 255.0, 0, 255).astype(np.uint8)
+    # Canny מחזיר 0/255 (uint8) -> מתאים ל edge > 50
+    edges = cv2.Canny(gray, 50, 150)
     return edges
