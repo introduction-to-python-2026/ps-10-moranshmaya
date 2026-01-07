@@ -3,10 +3,15 @@ import numpy as np
 
 def load_image(path):
     img = Image.open(path).convert("L")
-    return np.asarray(img, dtype=np.uint8)
+    arr = np.asarray(img)
+
+    # אם זו תמונת קצוות – להחזיר בוליאני
+    if "edges" in path:
+        return arr > 0
+
+    return arr.astype(np.uint8)
 
 def edge_detection(image):
-    def edge_detection(image):
     img = image.astype(np.int16)
 
     dx = np.abs(img[:, 1:] - img[:, :-1])
