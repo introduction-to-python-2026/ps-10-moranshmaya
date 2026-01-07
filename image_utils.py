@@ -1,5 +1,6 @@
 from PIL import Image
 import numpy as np
+from skimage.filters import sobel
 
 def load_image(path):
     img = Image.open(path)
@@ -9,23 +10,20 @@ def load_image(path):
         arr = np.asarray(img.convert("L"), dtype=np.uint8)
         return arr > 0
 
-    # lena.jpg: להחזיר RGB תלת־ממדי
     return np.asarray(img.convert("RGB"), dtype=np.uint8)
 
 
 def edge_detection(image):
-    # אם נכנס RGB -> להפוך לאפור
+    def edge_detection(image):
+    # image יכול להגיע RGB אחרי median(..., ball(3))
     if image.ndim == 3:
-        image = image.mean(axis=2)
+        gray = image.mean(axis=2).astype(np.float32)
+    else:
+        gray = image.astype(np.float32)
 
-    img = image.astype(np.int16)
+    # sobel עובד טוב על float
+    edges = sobel(gray)
 
-    dx = np.abs(img[:, 1:] - img[:, :-1])
-    dy = np.abs(img[1:, :] - img[:-1, :])
-
-    dx = np.pad(dx, ((0, 0), (0, 1)))
-    dy = np.pad(dy, ((0, 1), (0, 0)))
-
-    edges = dx + dy
-    edges = np.clip(edges, 0, 255).astype(np.uint8)
+    # להחזיר 0..255 כדי שסף > 50 יעבוד
+    edges = np.clip(edges * 255.0, 0, 255).astype(np.uint8)
     return edges
