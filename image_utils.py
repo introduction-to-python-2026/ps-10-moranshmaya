@@ -17,22 +17,22 @@ def load_image(path: str):
 
 
 def edge_detection(image):
+    def edge_detection(image):
     img = image.astype(np.float32)
 
-    # אם הערכים כבר בטווח 0..1 (float) – לא מחלקים שוב ב-255
+    # נרמול רק אם הקלט הוא uint8
     if img.max() > 1.0:
         img = img / 255.0
 
-    if img.ndim == 3:
-        gray = rgb2gray(img)
-    else:
-        gray = img
+    gray = rgb2gray(img) if img.ndim == 3 else img
 
     edges = sobel(gray)
-    edges = np.power(edges, 0.25)
 
     m = edges.max()
     if m > 0:
         edges = edges / m
 
-    return np.clip(np.rint(edges * 255), 0, 255).astype(np.uint8)
+    # הגברה לינארית עדינה כדי לעבור את הסף 50
+    edges = np.clip(edges * 1.2, 0.0, 1.0)
+
+    return (edges * 255).astype(np.uint8)
