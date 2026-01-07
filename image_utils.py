@@ -1,27 +1,13 @@
-from PIL import Image
 import numpy as np
-from scipy.signal import convolve2d
-def load_image(path: str):
-    img = Image.open(path)
-    if "edges" in path:
-        arr = np.asarray(img.convert("L"), dtype=np.uint8)
-        return arr > 0
-    return np.asarray(img.convert("RGB"), dtype=np.uint8)
-def edge_detection(image):
-    img = image.astype(np.float32)
-   
-    if img.ndim == 3:
-        gray = img.mean(axis=2)
-    else:
-        gray = img
-    kernelY = np.array([[ 1,  2,  1],
-                        [ 0,  0,  0],
-                        [-1, -2, -1]], dtype=np.float32)
-    kernelX = np.array([[ 1,  0, -1],
-                        [ 2,  0, -2],
-                        [ 1,  0, -1]], dtype=np.float32)
-    edgeY = convolve2d(gray, kernelY, mode="same", boundary="fill", fillvalue=0)
-    edgeX = convolve2d(gray, kernelX, mode="same", boundary="fill", fillvalue=0)
-    edgeMAG = np.sqrt(edgeX**2 + edgeY**2)
-    edgeMAG = np.nan_to_num(edgeMAG, nan=0.0, posinf=0.0, neginf=0.0)
-return edgeMAG
+from PIL import Image
+from skimage import filters
+
+
+def load_image(path):
+    img = Image.open(path).convert("L")
+    return np.array(img)
+
+
+def edge_detection(img):
+    edges = filters.sobel(img)
+    return (edges * 255).astype(np.uint8)
