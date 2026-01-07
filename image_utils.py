@@ -24,8 +24,9 @@ def edge_detection(image):
     edgeY = convolve2d(gray, kernelY, mode="same", boundary="fill", fillvalue=0)
     edgeX = convolve2d(gray, kernelX, mode="same", boundary="fill", fillvalue=0)
     edgeMAG = np.sqrt(edgeX**2 + edgeY**2)
+    edgeMAG = np.nan_to_num(edgeMAG, nan=0.0, posinf=0.0, neginf=0.0)
     m = edgeMAG.max()
     if m > 0:
         edgeMAG = edgeMAG / m
-   edgeMAG = np.nan_to_num(edgeMAG, nan=0.0, posinf=0.0, neginf=0.0)
+  
 return np.clip(edgeMAG * 255.0, 0, 255).astype(np.uint8)
