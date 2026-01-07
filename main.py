@@ -24,5 +24,5 @@ def main():
     print("Saved edge image to edges.png")
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
